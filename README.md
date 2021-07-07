@@ -1,2 +1,4 @@
-A container image for a generic IOC to support GigE cameras
-via the ADAravis support module# ioc-template
+TODO update with correct comment for included support module
+
+A container image template for creating new generic IOCs
+
