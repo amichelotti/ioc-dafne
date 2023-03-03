@@ -1,7 +1,7 @@
 ##### build stage ##############################################################
 
 ARG TARGET_ARCHITECTURE
-ARG BASE=23.2.1
+ARG BASE=23.3.1
 
 FROM  ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-developer:${BASE} AS developer
 
@@ -27,6 +27,7 @@ COPY ibek-defs/autosave/ /ctools/autosave/
 RUN python3 modules.py install AUTOSAVE R5-10-2 github.com/epics-modules/autosave.git --patch autosave/autosave.sh
 RUN make -C ${SUPPORT}/autosave -j $(nproc)
 
+COPY ibek-defs/busy/ /ctools/busy/
 RUN python3 modules.py install BUSY R1-7-3 github.com/epics-modules/busy.git
 RUN make -C ${SUPPORT}/busy -j $(nproc)
 
