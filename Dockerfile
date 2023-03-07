@@ -52,3 +52,8 @@ FROM ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-runtime:${BASE} 
 
 # add products from build stage
 COPY --from=runtime_prep /min_files /
+# add the example IOC - TODO could update minimize.sh to include this
+COPY --from=developer ${IOC}/start.sh ${IOC}
+COPY --from=developer ${IOC}/example/ ${IOC}/example
+
+ENTRYPOINT ["/bin/bash", "-c", "${IOC}/start.sh"]
