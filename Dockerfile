@@ -11,8 +11,10 @@ FROM  ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-developer:${BAS
 #     PACKAGES \
 #     && rm -rf /var/lib/apt/lists/*
 
-# override of epics-base ctools may occasionally be practical
+# override of epics-base ctools and ibek may be practical but should be removed
+# when epics-base is updated
 COPY ctools /ctools/
+RUN pip install ibek==0.9.5.b2
 # copy the global ibek files
 COPY ibek-defs/_global /ctools/_global/
 
@@ -52,6 +54,8 @@ FROM ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-runtime:${BASE} 
 
 # add products from build stage
 COPY --from=runtime_prep /min_files /
+COPY --from=developer /venv /venv
+
 # add the example IOC - TODO could update minimize.sh to include this
 COPY --from=developer ${IOC}/start.sh ${IOC}
 COPY --from=developer ${IOC}/example/ ${IOC}/example
