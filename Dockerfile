@@ -1,7 +1,7 @@
 ##### build stage ##############################################################
 
 ARG TARGET_ARCHITECTURE
-ARG BASE=23.2.1
+ARG BASE=23.3.1
 
 FROM  ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-developer:${BASE} AS developer
 
@@ -11,8 +11,10 @@ FROM  ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-developer:${BAS
 #     PACKAGES \
 #     && rm -rf /var/lib/apt/lists/*
 
-# override of epics-base ctools may occasionally be practical
+# override of epics-base ctools and ibek may be practical but should be removed
+# when epics-base is updated
 COPY ctools /ctools/
+RUN pip install ibek==0.9.5.b2
 # copy the global ibek files
 COPY ibek-defs/_global /ctools/_global/
 
@@ -27,6 +29,7 @@ COPY ibek-defs/autosave/ /ctools/autosave/
 RUN python3 modules.py install AUTOSAVE R5-10-2 github.com/epics-modules/autosave.git --patch autosave/autosave.sh
 RUN make -C ${SUPPORT}/autosave -j $(nproc)
 
+COPY ibek-defs/busy/ /ctools/busy/
 RUN python3 modules.py install BUSY R1-7-3 github.com/epics-modules/busy.git
 RUN make -C ${SUPPORT}/busy -j $(nproc)
 
@@ -51,3 +54,10 @@ FROM ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-runtime:${BASE} 
 
 # add products from build stage
 COPY --from=runtime_prep /min_files /
+COPY --from=developer /venv /venv
+
+# add the example IOC - TODO could update minimize.sh to include this
+COPY --from=developer ${IOC}/start.sh ${IOC}
+COPY --from=developer ${IOC}/example/ ${IOC}/example
+
+ENTRYPOINT ["/bin/bash", "-c", "${IOC}/start.sh"]
