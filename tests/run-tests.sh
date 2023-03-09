@@ -88,19 +88,24 @@ if ! podman image exists ioc-template-test-image || [[ ${rebuild} == "true" ]] ;
 fi
 
 # Test the default example IOC #################################################
-podman rm -ft0 ioc-template-test-container
+if podman container exists ioc-template-test-container; then
+    podman stop -t0 ioc-template-test-container
+    podman rm -f ioc-template-test-container
+fi
 podman run ${ioc_args}
 check_ioc "EXAMPLE"
 
 # Test an ibek IOC #############################################################
-podman rm -ft0 ioc-template-test-container
+podman stop -t0 ioc-template-test-container
+podman rm -f ioc-template-test-container
 podman run  -v $(pwd)/tests/example-ibek-config:${config} ${ioc_args}
 
 check_pv 'test-ibek-ioc:EPICS_VERS' 'R7.0.7'
 check_ioc "EXAMPLE:IBEK"
 
 # Test a and coded st.cmd IOC ##################################################
-podman rm -ft0 ioc-template-test-container
+podman stop -t0 ioc-template-test-container
+podman rm -f ioc-template-test-container
 podman run  -v $(pwd)/tests/example-config:${config} ${ioc_args}
 
 check_pv 'test-ioc:EPICS_VERS' 'R7.0.7'
