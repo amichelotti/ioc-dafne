@@ -52,7 +52,7 @@ check_pv () {
 check_ioc() {
     podman run ${base_args} caput ${1}:A 1.4
     podman run ${base_args} caput ${1}:B 1.5
-    podman run ${base_args} caput -w1 ${1}:SUM.PROC 0
+    sleep 0.5
     check_pv ${1}:SUM 2.9
 }
 

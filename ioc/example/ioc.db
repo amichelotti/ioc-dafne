@@ -3,7 +3,6 @@ record(calc, "EXAMPLE:SUM") {
   field(CALC, "A+B")
   field(INPA, "EXAMPLE:A")
   field(INPB, "EXAMPLE:B")
-  field(SCAN, "1 second")
 }
 
 record(ao, "EXAMPLE:A") {
@@ -13,6 +12,7 @@ record(ao, "EXAMPLE:A") {
     field(DRVL, "-10")
     field(DRVH, "+10")
     field(VAL,  "0.000")
+    field(FLNK, "EXAMPLE:SUM")
 }
 
 record(ao, "EXAMPLE:B") {
@@ -22,4 +22,5 @@ record(ao, "EXAMPLE:B") {
     field(DRVL, "-10")
     field(DRVH, "+10")
     field(VAL,  "0.000")
+    field(FLNK, "EXAMPLE:SUM")
 }

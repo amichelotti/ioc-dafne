@@ -3,7 +3,6 @@ record(calc, "EXAMPLE:IBEK:SUM") {
   field(CALC, "A+B")
   field(INPA, "EXAMPLE:IBEK:A")
   field(INPB, "EXAMPLE:IBEK:B")
-  field(SCAN, "1 second")
 }
 
 record(ao, "EXAMPLE:IBEK:A") {
@@ -13,6 +12,7 @@ record(ao, "EXAMPLE:IBEK:A") {
     field(DRVL, "-10")
     field(DRVH, "+10")
     field(VAL,  "0.000")
+    field(FLNK, "EXAMPLE:IBEK:SUM")
 }
 
 record(ao, "EXAMPLE:IBEK:B") {
@@ -22,4 +22,5 @@ record(ao, "EXAMPLE:IBEK:B") {
     field(DRVL, "-10")
     field(DRVH, "+10")
     field(VAL,  "0.000")
+    field(FLNK, "EXAMPLE:IBEK:SUM")
 }
