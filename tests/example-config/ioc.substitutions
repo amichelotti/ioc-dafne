@@ -1,4 +1,6 @@
 
+# Macros:
+#  IOC  Device prefix
 file $(DEVIOCSTATS)/db/iocAdminSoft.db
 {
 pattern { IOC }
