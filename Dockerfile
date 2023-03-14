@@ -50,7 +50,11 @@ RUN bash /ctools/minimize.sh ${IOC} $(ls -d ${SUPPORT}/*/) /ctools
 
 FROM ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-runtime:${BASE} AS runtime
 
-# IOC-TEMPLATE-TODO apt-get install additional runtime dependencies here
+# TODO this should go in base probably
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    telnet \
+    && rm -rf /var/lib/apt/lists/*
 
 # add products from build stage
 COPY --from=runtime_prep /min_files /
