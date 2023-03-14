@@ -60,4 +60,6 @@ COPY --from=developer /venv /venv
 COPY --from=developer ${IOC}/start.sh ${IOC}
 COPY --from=developer ${IOC}/example/ ${IOC}/example
 
+ENV TARGET_ARCHITECTURE ${TARGET_ARCHITECTURE}
+
 ENTRYPOINT ["/bin/bash", "-c", "${IOC}/start.sh"]
