@@ -102,5 +102,11 @@ fi
 
 # Launch the IOC ***************************************************************
 
-# Execute the IOC binary and pass the startup script as an argument
-exec ${IOC}/bin/linux-x86_64/ioc ${final_ioc_startup}
+if [[ ${TARGET_ARCHITECTURE} == "rtems" ]] ; then
+    echo "RTEMS IOC startup - copying IOC to RTEMS mount point ..."
+    cp -r ${IOC} ${K8S_IOC_ROOT}
+    sleep 100
+else
+    # Execute the IOC binary and pass the startup script as an argument
+    exec ${IOC}/bin/linux-x86_64/ioc ${final_ioc_startup}
+fi
