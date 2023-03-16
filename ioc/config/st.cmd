@@ -11,7 +11,7 @@ epicsEnvSet("EPICS_TS_MIN_WEST","0")
 dbLoadDatabase "dbd/ioc.dbd"
 ioc_registerRecordDeviceDriver(pdbbase)
 
-dbLoadRecords("example/ioc.db")
+dbLoadRecords("config/ioc.db")
 
 epicsEnvSet("PRINTDEBUG", "3")
 

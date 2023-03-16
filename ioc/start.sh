@@ -33,7 +33,7 @@
 #
 # 4. empty config folder *******************************************************
 #    If the config folder is empty then this IOC will launch the example in
-#    ./example folder
+#    ./config folder
 #
 # RTEMS IOCS - RTEMS IOC startup files can be generated using 2,3,4 above. For
 # RTEMS we do not execute the ioc inside of the pod. Instead we:
@@ -97,7 +97,8 @@ elif [ -f ${ioc_startup} ] ; then
 # 4. empty config folder *******************************************************
 
 else
-    final_ioc_startup=${TOP}/example/st.cmd
+    echo "ERROR - no startup script found in config folder"
+    echo "${CONFIG_DIR} must contain one of st.cmd, ioc.yaml, start.sh"
 fi
 
 # Launch the IOC ***************************************************************

@@ -53,16 +53,15 @@ FROM ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-runtime:${BASE} 
 # TODO this should go in base probably
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
-    telnet \
+    telnet netcat psmisc \
     && rm -rf /var/lib/apt/lists/*
 
 # add products from build stage
 COPY --from=runtime_prep /min_files /
 COPY --from=developer /venv /venv
 
-# add the example IOC - TODO could update minimize.sh to include this
-COPY --from=developer ${IOC}/start.sh ${IOC}
-COPY --from=developer ${IOC}/example/ ${IOC}/example
+# add ioc scripts
+COPY ioc ${IOC}
 
 ENV TARGET_ARCHITECTURE ${TARGET_ARCHITECTURE}
 
