@@ -1,5 +1,4 @@
 import asyncio
-from asyncio import events
 
 import click
 from telnetlib3 import open_connection
@@ -11,13 +10,13 @@ def cli():
 
 
 async def user_input(writer):
-    loop = events._get_running_loop()
+    loop = asyncio.events._get_running_loop()
 
     while True:
+        # run the wait for input in a separate thread
         cmd = await loop.run_in_executor(None, input)
         writer.write(cmd)
         writer.write("\r")
-        await asyncio.sleep(0.5)
 
 
 async def server_output(reader):
@@ -30,12 +29,13 @@ async def server_output(reader):
 
 
 async def shell(reader, writer):
-    # user input in a separate task
-    server = asyncio.create_task(server_output(reader))
-    user = asyncio.create_task(user_input(writer))
+    # user input and server output in separate tasks
+    tasks = [
+        server_output(reader),
+        user_input(writer),
+    ]
 
-    await server
-    await user
+    await asyncio.gather(*tasks)
 
 
 async def runner(hostname, port):
