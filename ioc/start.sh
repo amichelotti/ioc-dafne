@@ -32,8 +32,9 @@
 #    be generated in /tmp/ioc.db
 #
 # 4. empty config folder *******************************************************
-#    If the config folder is empty then this IOC will launch the example in
-#    ./config folder
+#    If the config folder is not mounted then the IOC will launch the example in
+#    ./config folder. Mounting a config folder overrides the example contents
+#    in this repo's ./config/ .
 #
 # RTEMS IOCS - RTEMS IOC startup files can be generated using 2,3,4 above. For
 # RTEMS we do not execute the ioc inside of the pod. Instead we:

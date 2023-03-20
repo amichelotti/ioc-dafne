@@ -14,7 +14,7 @@ FROM  ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-developer:${BAS
 # override of epics-base ctools and ibek may be practical but should be removed
 # when epics-base is updated
 COPY ctools /ctools/
-RUN pip install ibek==0.9.5.b2
+RUN pip install ibek==0.9.5.b2 telnetlib3
 # copy the global ibek files
 COPY ibek-defs/_global /ctools/_global/
 
