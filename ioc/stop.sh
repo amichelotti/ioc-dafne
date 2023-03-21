@@ -6,7 +6,7 @@ CONFIG_DIR=${TOP}/config
 override=${CONFIG_DIR}/stop.sh
 
 if [[ -f ${override} ]]; then
-    exec ${override}
+    exec bash ${override}
 elif [[ ${RTEMS_VME_AUTO_REBOOT} == 'true' ]] ; then
     killall telnet
     sleep 5
