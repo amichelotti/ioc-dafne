@@ -91,7 +91,9 @@ elif [ -f ${ioc_startup} ] ; then
     if [ -f ${CONFIG_DIR}/ioc.substitutions ]; then
         # generate ioc.db from ioc.substitutions, including all templates from SUPPORT
         includes=$(for i in ${SUPPORT}/*/db; do echo -n "-I $i "; done)
-        msi ${includes} -S ${CONFIG_DIR}/ioc.substitutions -o ${epics_db}
+        # msi tries to open substitutions file R/W so copy to a writable location
+        cp ${CONFIG_DIR}/ioc.substitutions /tmp
+        msi ${includes} -S /tmp/ioc.substitutions -o ${epics_db}
     fi
     final_ioc_startup=${ioc_startup}
 
@@ -105,10 +107,22 @@ fi
 # Launch the IOC ***************************************************************
 
 if [[ ${TARGET_ARCHITECTURE} == "rtems" ]] ; then
-echo "RTEMS IOC startup - copying IOC to RTEMS mount point ..."
-    rm -r ${K8S_IOC_ROOT}
-    cp -r ${IOC} ${K8S_IOC_ROOT}
-    telnet ${RTEMS_VME_CONSOLE_ADDR} ${RTEMS_VME_CONSOLE_PORT}
+    echo "RTEMS IOC (base). Copying IOCs file to RTEMS mount point ..."
+    rm -rf ${K8S_IOC_ROOT}/*
+    cp -r ${IOC}/* ${K8S_IOC_ROOT}
+
+    if [[ -f /tmp/ioc.db ]]; then
+        cp /tmp/ioc.db ${K8S_IOC_ROOT}/config
+    fi
+
+    # Connect to the RTEMS console and reboot the IOC if requested
+    echo "Connecting to RTEMS console at ${RTEMS_VME_CONSOLE_ADDR}:${RTEMS_VME_CONSOLE_PORT}"
+    python3 ${CONFIG_DIR}/telnet3.py ${RTEMS_VME_CONSOLE_ADDR} ${RTEMS_VME_CONSOLE_PORT} --reboot ${RTEMS_VME_AUTO_REBOOT}
+    while true; do
+        echo "telnet3.py exited, restarting ..."
+        sleep 2
+        python3 ${CONFIG_DIR}/telnet3.py ${RTEMS_VME_CONSOLE_ADDR} ${RTEMS_VME_CONSOLE_PORT}
+    done
 else
     # Execute the IOC binary and pass the startup script as an argument
     exec ${IOC}/bin/linux-x86_64/ioc ${final_ioc_startup}

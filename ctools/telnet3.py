@@ -1,7 +1,9 @@
 import asyncio
 
 import click
-from telnetlib3 import open_connection
+import telnetlib3
+
+# TODO SWITCH TO typer from click
 
 
 @click.group()
@@ -17,7 +19,6 @@ async def user_input(writer):
         cmd = await loop.run_in_executor(None, input)
         writer.write(cmd)
         writer.write("\r")
-        print(".", flush=True, end="")
 
 
 async def server_output(reader):
@@ -38,16 +39,31 @@ async def shell(reader, writer):
     await asyncio.gather(*tasks)
 
 
-async def runner(hostname, port):
-    reader, writer = await open_connection(hostname, port, shell=shell)
+async def runner(hostname: str, port: int, reboot: bool):
+    reader, writer = await telnetlib3.open_connection(hostname, port)
+
+    writer.write("\r")
+    await asyncio.sleep(0.1)
+    prompt = await reader.read(1024)
+    print(f"prompt is {prompt.strip()}")
+
+    if reboot:
+        writer.write("exit\r")
+
+    reader.close()
+    writer.close()
+
+    # start interactive session
+    reader, writer = await telnetlib3.open_connection(hostname, port, shell=shell)
     await writer.protocol.waiter_closed
 
 
 @cli.command()
 @click.argument("hostname", type=str)
 @click.argument("port", type=int)
-def connect(hostname, port):
-    asyncio.run(runner(hostname, port))
+@click.option("--reboot", type=bool, default=False)
+def connect(hostname: str, port: int, reboot: bool):
+    asyncio.run(runner(hostname, port, reboot))
 
 
 cli.add_command(connect)
