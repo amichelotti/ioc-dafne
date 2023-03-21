@@ -47,7 +47,7 @@ set -x -e
 
 # environment setup ************************************************************
 
-TOP=$(realpath $(dirname $0))
+TOP=/repos/epics/ioc
 cd ${TOP}
 CONFIG_DIR=${TOP}/config
 
@@ -67,7 +67,7 @@ epics_db=/tmp/ioc.db
 # 1. start.sh ******************************************************************
 
 if [ -f ${override} ]; then
-    exec bash ${override}
+    exec ${override}
 
 # 2. ioc.yaml ******************************************************************
 
@@ -117,12 +117,7 @@ if [[ ${TARGET_ARCHITECTURE} == "rtems" ]] ; then
 
     # Connect to the RTEMS console and reboot the IOC if requested
     echo "Connecting to RTEMS console at ${RTEMS_VME_CONSOLE_ADDR}:${RTEMS_VME_CONSOLE_PORT}"
-    python3 ${CONFIG_DIR}/telnet3.py connect ${RTEMS_VME_CONSOLE_ADDR} ${RTEMS_VME_CONSOLE_PORT} --reboot ${RTEMS_VME_AUTO_REBOOT}
-    while true; do
-        echo "telnet3.py exited, restarting ..."
-        sleep 2
-        python3 ${CONFIG_DIR}/telnet3.py connect ${RTEMS_VME_CONSOLE_ADDR} ${RTEMS_VME_CONSOLE_PORT}
-    done
+    exec python3 ${CONFIG_DIR}/telnet3.py connect ${RTEMS_VME_CONSOLE_ADDR} ${RTEMS_VME_CONSOLE_PORT} --reboot ${RTEMS_VME_AUTO_REBOOT} --pause ${RTEMS_VME_AUTO_PAUSE}
 else
     # Execute the IOC binary and pass the startup script as an argument
     exec ${IOC}/bin/linux-x86_64/ioc ${final_ioc_startup}
