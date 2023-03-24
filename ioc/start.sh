@@ -32,8 +32,9 @@
 #    be generated in /tmp/ioc.db
 #
 # 4. empty config folder *******************************************************
-#    If the config folder is empty then this IOC will launch the example in
-#    ./example folder
+#    If the config folder is not mounted then the IOC will launch the example in
+#    ./config folder. Mounting a config folder overrides the example contents
+#    in this repo's ./config/ .
 #
 # RTEMS IOCS - RTEMS IOC startup files can be generated using 2,3,4 above. For
 # RTEMS we do not execute the ioc inside of the pod. Instead we:
@@ -46,9 +47,10 @@ set -x -e
 
 # environment setup ************************************************************
 
-TOP=$(realpath $(dirname $0))
+TOP=/repos/epics/ioc
 cd ${TOP}
 CONFIG_DIR=${TOP}/config
+THIS_SCRIPT=$(realpath ${0})
 
 # add module paths to environment for use in ioc startup script
 source ${SUPPORT}/configure/RELEASE.shell
@@ -65,8 +67,8 @@ epics_db=/tmp/ioc.db
 
 # 1. start.sh ******************************************************************
 
-if [ -f ${override} ]; then
-    exec ${override}
+if [[ -f ${override} && ${override} != ${THIS_SCRIPT} ]]; then
+    exec bash ${override}
 
 # 2. ioc.yaml ******************************************************************
 
@@ -90,22 +92,33 @@ elif [ -f ${ioc_startup} ] ; then
     if [ -f ${CONFIG_DIR}/ioc.substitutions ]; then
         # generate ioc.db from ioc.substitutions, including all templates from SUPPORT
         includes=$(for i in ${SUPPORT}/*/db; do echo -n "-I $i "; done)
-        msi ${includes} -S ${CONFIG_DIR}/ioc.substitutions -o ${epics_db}
+        # msi tries to open substitutions file R/W so copy to a writable location
+        cp ${CONFIG_DIR}/ioc.substitutions /tmp
+        msi ${includes} -S /tmp/ioc.substitutions -o ${epics_db}
     fi
     final_ioc_startup=${ioc_startup}
 
 # 4. empty config folder *******************************************************
 
 else
-    final_ioc_startup=${TOP}/example/st.cmd
+    echo "ERROR - no startup script found in config folder"
+    echo "${CONFIG_DIR} must contain one of st.cmd, ioc.yaml, start.sh"
 fi
 
 # Launch the IOC ***************************************************************
 
 if [[ ${TARGET_ARCHITECTURE} == "rtems" ]] ; then
-    echo "RTEMS IOC startup - copying IOC to RTEMS mount point ..."
-    cp -r ${IOC} ${K8S_IOC_ROOT}
-    sleep 100
+    echo "RTEMS IOC (base). Copying IOCs file to RTEMS mount point ..."
+    rm -rf ${K8S_IOC_ROOT}/*
+    cp -r ${IOC}/* ${K8S_IOC_ROOT}
+
+    if [[ -f /tmp/ioc.db ]]; then
+        cp /tmp/ioc.db ${K8S_IOC_ROOT}/config
+    fi
+
+    # Connect to the RTEMS console and reboot the IOC if requested
+    echo "Connecting to RTEMS console at ${RTEMS_VME_CONSOLE_ADDR}:${RTEMS_VME_CONSOLE_PORT}"
+    exec python3 /ctools/telnet3.py connect ${RTEMS_VME_CONSOLE_ADDR} ${RTEMS_VME_CONSOLE_PORT} --reboot ${RTEMS_VME_AUTO_REBOOT} --pause ${RTEMS_VME_AUTO_PAUSE}
 else
     # Execute the IOC binary and pass the startup script as an argument
     exec ${IOC}/bin/linux-x86_64/ioc ${final_ioc_startup}

@@ -50,7 +50,10 @@ check_pv () {
 }
 
 check_ioc() {
-    podman run ${base_args} caput ${1}:A 1.4
+    for retry in {1..5} ; do
+        if podman run ${base_args} caput ${1}:A 1.4; then break; fi
+        sleep 1
+    done
     podman run ${base_args} caput ${1}:B 1.5
     sleep 0.5
     check_pv ${1}:SUM 2.9
@@ -98,7 +101,7 @@ check_ioc "EXAMPLE"
 # Test an ibek IOC #############################################################
 podman stop -t0 ioc-template-test-container
 podman rm -f ioc-template-test-container
-podman run  -v $(pwd)/tests/example-ibek-config:${config} ${ioc_args}
+podman run  -v $(pwd)/tests/example-ibek-config:${config}:ro ${ioc_args}
 
 check_pv 'test-ibek-ioc:EPICS_VERS' 'R7.0.7'
 check_ioc "EXAMPLE:IBEK"
@@ -106,10 +109,14 @@ check_ioc "EXAMPLE:IBEK"
 # Test a and coded st.cmd IOC ##################################################
 podman stop -t0 ioc-template-test-container
 podman rm -f ioc-template-test-container
-podman run  -v $(pwd)/tests/example-config:${config} ${ioc_args}
+podman run  -v $(pwd)/tests/example-config:${config}:ro ${ioc_args}
 
 check_pv 'test-ioc:EPICS_VERS' 'R7.0.7'
-check_ioc "EXAMPLE"
+check_ioc "EXAMPLE2"
+
+# Done #########################################################################
+echo
+echo "All tests passed!"
 
 
 
