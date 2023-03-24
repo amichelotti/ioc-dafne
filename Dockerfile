@@ -50,7 +50,7 @@ RUN bash /ctools/minimize.sh ${IOC} $(ls -d ${SUPPORT}/*/) /ctools
 
 FROM ghcr.io/epics-containers/epics-base-${TARGET_ARCHITECTURE}-runtime:${BASE} AS runtime
 
-# TODO this should go in base probably
+# these installs required for RTEMS only
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     telnet netcat psmisc \
