@@ -19,7 +19,7 @@ fi
 
 # use devIOCStats UPTIME as the default liveness PV
 # but allow override from the environment
-K8S_IOC_PV=${K8S_IOC_PV:-"${K8S_IOC_NAME}:UPTIME"}
+K8S_IOC_PV=${K8S_IOC_PV:-"${IOC_PREFIX}:UPTIME"}
 
 # use default CA PORT or override from the environment
 K8S_IOC_PORT=${K8S_IOC_PORT:-5064}
