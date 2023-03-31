@@ -106,7 +106,7 @@ podman run  -v $(pwd)/tests/example-ibek-config:${config}:ro ${ioc_args}
 check_pv 'test-ibek-ioc:EPICS_VERS' 'R7.0.7'
 check_ioc "EXAMPLE:IBEK"
 
-# Test a and coded st.cmd IOC ##################################################
+# Test a hand coded st.cmd IOC ##################################################
 podman stop -t0 ioc-template-test-container
 podman rm -f ioc-template-test-container
 podman run  -v $(pwd)/tests/example-config:${config}:ro ${ioc_args}
