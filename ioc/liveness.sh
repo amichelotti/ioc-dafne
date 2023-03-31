@@ -25,7 +25,7 @@ K8S_IOC_PV=${K8S_IOC_PV:-"${IOC_PREFIX}:UPTIME"}
 K8S_IOC_PORT=${K8S_IOC_PORT:-5064}
 
 export EPICS_CA_ADDR_LIST=${K8S_IOC_ADDRESS}
-export export EPICS_CA_SERVER_PORT=${K8S_IOC_PORT}
+export EPICS_CA_SERVER_PORT=${K8S_IOC_PORT}
 
 # verify that the IOC is running
 if caget ${K8S_IOC_PV} ; then

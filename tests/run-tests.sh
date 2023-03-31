@@ -30,7 +30,7 @@ ROOT=$(realpath ${THIS_DIR}/..)
 set -ex
 
 base_args='
-    --net podman
+    --net host
     -e EPICS_CA_SERVER_PORT=7064
     ghcr.io/epics-containers/epics-base-linux-runtime:23.3.1
 '
@@ -62,9 +62,10 @@ check_ioc() {
 config='/repos/epics/ioc/config'
 ioc_args='
 --security-opt label=disable
---net podman
+--net host
 --name ioc-template-test-container
 -dit
+-v /tmp/tmp
 ioc-template-test-image
 '
 
@@ -73,7 +74,7 @@ ioc-template-test-image
 # commands:
 #
 # podman rm -ft0 ioc-template-test-container
-# podman run --net podman -v $(pwd)/tests/example-ibek-config:/repos/epics/ioc/config --name ioc-template-test-container --security-opt label=disable -it ioc-template-test-image
+# podman run --net host -v $(pwd)/tests/example-ibek-config:/repos/epics/ioc/config --name ioc-template-test-container --security-opt label=disable -it ioc-template-test-image
 #
 # replacing "$(pwd)/tests/example-ibek-config" with a path to a different
 # config folder if required. This gives you a bash prompt in the container.
