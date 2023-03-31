@@ -1,10 +1,10 @@
 ## command line options ########################################################
-rebuild=false
+reuse=false
 
 while getopts "hr" arg; do
     case $arg in
     r)
-        rebuild=true
+        reuse=true
         ;;
     *)
         echo "
@@ -15,7 +15,7 @@ Runs a suite of tests for this module.
 Options:
 
     -h              show this help
-    -r              force rebuild of the container (default: false)
+    -r              reuse previous build of the container (default: false)
 "
         exit 0
         ;;
@@ -38,7 +38,7 @@ base_args='
 check_pv () {
     # wait for the IOC to be up and running.
     for retry in {1..5} ; do
-        if podman run ${base_args} caget ${1} > /tmp/pv_out.txt ; then break; fi
+        if podman run --rm ${base_args} caget ${1} > /tmp/pv_out.txt ; then break; fi
         sleep 1
     done
 
@@ -51,10 +51,10 @@ check_pv () {
 
 check_ioc() {
     for retry in {1..5} ; do
-        if podman run ${base_args} caput ${1}:A 1.4; then break; fi
+        if podman run --rm ${base_args} caput ${1}:A 1.4; then break; fi
         sleep 1
     done
-    podman run ${base_args} caput ${1}:B 1.5
+    podman run --rm ${base_args} caput ${1}:B 1.5
     sleep 0.5
     check_pv ${1}:SUM 2.9
 }
@@ -86,7 +86,7 @@ ioc-template-test-image
 cd ${ROOT}
 
 # build the ioc-template container for linux ###################################
-if ! podman image exists ioc-template-test-image || [[ ${rebuild} == "true" ]] ; then
+if ! podman image exists ioc-template-test-image || [[ ${reuse} != "true" ]] ; then
     podman build -t ioc-template-test-image --build-arg TARGET_ARCHITECTURE=linux .
 fi
 
