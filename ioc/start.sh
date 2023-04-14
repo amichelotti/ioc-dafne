@@ -108,6 +108,10 @@ fi
 # Launch the IOC ***************************************************************
 
 if [[ ${TARGET_ARCHITECTURE} == "rtems" ]] ; then
+
+    # this mount point is defined in helm-ioc-lib _deployment.yaml
+    K8S_IOC_ROOT=/nfsv2-tftp
+
     echo "RTEMS IOC (base). Copying IOCs file to RTEMS mount point ..."
     rm -rf ${K8S_IOC_ROOT}/*
     cp -r ${IOC}/* ${K8S_IOC_ROOT}
