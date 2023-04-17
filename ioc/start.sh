@@ -112,9 +112,11 @@ if [[ ${TARGET_ARCHITECTURE} == "rtems" ]] ; then
     # this mount point is defined in helm-ioc-lib _deployment.yaml
     K8S_IOC_ROOT=/nfsv2-tftp
 
-    echo "RTEMS IOC (base). Copying IOCs file to RTEMS mount point ..."
+    echo "RTEMS IOC. Copying IOCs files to RTEMS mount point ..."
     rm -rf ${K8S_IOC_ROOT}/*
     cp -r ${IOC}/* ${K8S_IOC_ROOT}
+    mkdir -p ${K8S_IOC_ROOT}/support/db
+    cp -r ${SUPPORT}/*/db/* ${K8S_IOC_ROOT}/support/db
 
     if [[ -f /tmp/ioc.db ]]; then
         cp /tmp/ioc.db ${K8S_IOC_ROOT}/config
