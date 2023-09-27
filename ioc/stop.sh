@@ -5,7 +5,7 @@
 # except that behaviour can be added by placing a stop.sh script in the
 # config directory.
 
-TOP=/repos/epics/ioc
+TOP=/epics/ioc
 cd ${TOP}
 CONFIG_DIR=${TOP}/config
 

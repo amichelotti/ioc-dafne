@@ -59,7 +59,7 @@ check_ioc() {
     check_pv ${1}:SUM 2.9
 }
 
-config='/repos/epics/ioc/config'
+config='/epics/ioc/config'
 ioc_args='
 --security-opt label=disable
 --net host
@@ -74,13 +74,13 @@ ioc-template-test-image
 # commands:
 #
 # podman rm -ft0 ioc-template-test-container
-# podman run --net host -v $(pwd)/tests/example-ibek-config:/repos/epics/ioc/config --name ioc-template-test-container --security-opt label=disable -it ioc-template-test-image
+# podman run --net host -v $(pwd)/tests/example-ibek-config:/epics/ioc/config --name ioc-template-test-container --security-opt label=disable -it ioc-template-test-image
 #
 # replacing "$(pwd)/tests/example-ibek-config" with a path to a different
 # config folder if required. This gives you a bash prompt in the container.
 #
 # To start the IOC:
-#   cd /repos/epics/ioc
+#   cd /epics/ioc
 #   ./start_ioc.sh
 #
 

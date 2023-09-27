@@ -47,7 +47,7 @@ set -x -e
 
 # environment setup ************************************************************
 
-TOP=/repos/epics/ioc
+TOP=/epics/ioc
 cd ${TOP}
 CONFIG_DIR=${TOP}/config
 THIS_SCRIPT=$(realpath ${0})
