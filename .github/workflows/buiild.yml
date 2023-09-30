@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ioc-schema
-          path: ./*.ibek.ioc.schema.json
+          path: ibek.ioc.schema.json
 
   release:
     # Release on tag push - publish ioc schema
@@ -74,11 +74,10 @@ jobs:
         with:
           name: ioc-schema
           path: ./
-          zip: false
 
       - name: Github Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
           files: |
-            ./*.ibek.ioc.schema.json
+            ibek.ioc.schema.json
           generate_release_notes: true
