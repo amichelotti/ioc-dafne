@@ -3,8 +3,8 @@
 # the IOC is made at build time but the devcontainer mounts over the top of it
 # so we need to regenerate it for devcontainer use
 
-cd /epics/ioc-config
+# get the ioc template, generate makefile and compile.
+# Commented out because compilation failures stop the devcontainer from starting
+# best to let the user do this manually once inside the container
 
-ibek ioc make-source-template
-ibek ioc generate-makefile
-ibek ioc compile
+# ibek ioc compile

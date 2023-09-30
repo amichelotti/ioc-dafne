@@ -35,8 +35,8 @@
         "--net=host",
         "--security-opt=label=disable"
     ],
-    "workspaceMount": "source=${localWorkspaceFolder},target=/epics/ioc-template,type=bind",
-    "workspaceFolder": "/epics/ioc-template",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/epics/${localWorkspaceFolderBasename},type=bind",
+    "workspaceFolder": "/epics/${localWorkspaceFolderBasename}",
     "mounts": [
         // Mount some useful local files from the user's home directory
         "source=${localEnv:HOME}/.bash_eternal_history,target=/root/.bash_eternal_history,type=bind",

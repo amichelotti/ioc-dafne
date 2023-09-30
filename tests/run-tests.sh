@@ -3,11 +3,11 @@ reuse=false
 
 while getopts "hr" arg; do
     case $arg in
-    r)
-        reuse=true
+        r)
+            reuse=true
         ;;
-    *)
-        echo "
+        *)
+            echo "
 usage: run-tests [options]
 
 Runs a suite of tests for this module.
@@ -16,8 +16,8 @@ Options:
 
     -h              show this help
     -r              reuse previous build of the container (default: false)
-"
-        exit 0
+            "
+            exit 0
         ;;
     esac
 done
@@ -30,9 +30,9 @@ ROOT=$(realpath ${THIS_DIR}/..)
 set -ex
 
 base_args='
-    --net host
-    -e EPICS_CA_SERVER_PORT=7064
-    ghcr.io/epics-containers/epics-base-linux-runtime:23.3.1
+--net host
+-e EPICS_CA_SERVER_PORT=7064
+ghcr.io/epics-containers/epics-base-linux-runtime:7.0.7ec2
 '
 
 check_pv () {
