@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# the IOC is made at build time but the devcontainer mounts over the top of it
+# so we need to regenerate it for devcontainer use
+
+cd /epics/ioc-config
+
+ibek ioc make-source-template
+ibek ioc generate-makefile
+ibek ioc compile

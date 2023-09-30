@@ -1,4 +1,6 @@
-TODO update with correct comment for included support module
+An epics-containers generic IOC source file.
 
-A container image template for creating new generic IOCs
+Generates a Generic IOC for running in a container.
+
+See the https://epics-containers.github.io
 

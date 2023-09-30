@@ -1,28 +1,22 @@
 ##### build stage ##############################################################
 
+ARG BASE
+ARG REGISTRY
 ARG TARGET_ARCHITECTURE
-ARG BASE=7.0.7ec2
-ARG REGISTRY=ghcr.io/epics-containers
 
 FROM  ${REGISTRY}/epics-base-${TARGET_ARCHITECTURE}-developer:${BASE} AS developer
 
-COPY ibek /ibek
-RUN pip install -e /ibek
-
-# the devcontainer mounts the project root to /epics/ioc-adaravis
-WORKDIR /epics/ioc-adaravis/ibek-support
+# In a devcontainer this folder is mounted on the host's clone of ioc-adsimdetector
+WORKDIR /workspaces/ioc-adsimdetector/ibek-support
 
 # copy the global ibek files
 COPY ibek-support/_global/ _global
 
-COPY ibek-support/iocStats/ iocStats
-RUN iocStats/install.sh 3.1.16
+COPY ibek-support/asyn/ asyn/
+RUN asyn/install.sh R4-42
 
-################################################################################
-#  TODO - Add futher support module installations here
-################################################################################
-
-# create IOC source tree / generate Makefile / compile
+# Make the IOC
+RUN ibek ioc generate-makefile
 RUN ibek ioc compile
 
 ##### runtime preparation stage ################################################
@@ -30,17 +24,23 @@ RUN ibek ioc compile
 FROM developer AS runtime_prep
 
 # get the products from the build stage and reduce to runtime assets only
-RUN ibek ioc extract-runtime-assets /assets
+WORKDIR /min_files
+RUN bash /epics/scripts/minimize.sh ${IOC} $(ls -d ${SUPPORT}/*/)
 
 ##### runtime stage ############################################################
 
 FROM ${REGISTRY}/epics-base-${TARGET_ARCHITECTURE}-runtime:${BASE} AS runtime
 
-# get runtime assets from the preparation stage
-COPY --from=runtime_prep /assets /
+# get the virtual environment from the developer stage
+COPY --from=developer /venv /venv
+# add products from build stage
+COPY --from=runtime_prep /min_files /
 
 # install runtime system dependencies, collected from install.sh scripts
 RUN ibek support apt-install --runtime
+
+# add ioc sample startup scripts
+COPY ioc ${IOC}
 
 ENV TARGET_ARCHITECTURE ${TARGET_ARCHITECTURE}
 
