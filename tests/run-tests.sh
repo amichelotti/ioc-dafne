@@ -3,11 +3,11 @@ reuse=false
 
 while getopts "hr" arg; do
     case $arg in
-    r)
-        reuse=true
+        r)
+            reuse=true
         ;;
-    *)
-        echo "
+        *)
+            echo "
 usage: run-tests [options]
 
 Runs a suite of tests for this module.
@@ -16,8 +16,8 @@ Options:
 
     -h              show this help
     -r              reuse previous build of the container (default: false)
-"
-        exit 0
+            "
+            exit 0
         ;;
     esac
 done
@@ -30,9 +30,9 @@ ROOT=$(realpath ${THIS_DIR}/..)
 set -ex
 
 base_args='
-    --net host
-    -e EPICS_CA_SERVER_PORT=7064
-    ghcr.io/epics-containers/epics-base-linux-runtime:23.3.1
+--net host
+-e EPICS_CA_SERVER_PORT=7064
+ghcr.io/epics-containers/epics-base-linux-runtime:7.0.7ec2
 '
 
 check_pv () {
@@ -59,7 +59,7 @@ check_ioc() {
     check_pv ${1}:SUM 2.9
 }
 
-config='/repos/epics/ioc/config'
+config='/epics/ioc/config'
 ioc_args='
 --security-opt label=disable
 --net host
@@ -74,13 +74,13 @@ ioc-template-test-image
 # commands:
 #
 # podman rm -ft0 ioc-template-test-container
-# podman run --net host -v $(pwd)/tests/example-ibek-config:/repos/epics/ioc/config --name ioc-template-test-container --security-opt label=disable -it ioc-template-test-image
+# podman run --net host -v $(pwd)/tests/example-ibek-config:/epics/ioc/config --name ioc-template-test-container --security-opt label=disable -it ioc-template-test-image
 #
 # replacing "$(pwd)/tests/example-ibek-config" with a path to a different
 # config folder if required. This gives you a bash prompt in the container.
 #
 # To start the IOC:
-#   cd /repos/epics/ioc
+#   cd /epics/ioc
 #   ./start_ioc.sh
 #
 

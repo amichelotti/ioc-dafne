@@ -12,37 +12,24 @@
 #   REGISTRY: the container registry to push to
 #   REPOSITORY: the container repository to push to
 #   CACHE: the directory to use for caching
+#   PLATFORM: the platform to build for (linux/amd64 or linux/arm64)
 
 ARCH=${ARCH:-linux}
 PUSH=${PUSH:-false}
 TAG=${TAG:-latest}
 REGISTRY=${REGISTRY:-ghcr.io}
-if [[ -z ${REPOSITORY} ]] ; then
-    # For local builds, infer the registry from git remote (assumes ghcr)
-    REPOSITORY=$(git remote -v | sed  "s/.*@github.com:\(.*\)\.git.*/ghcr.io\/\1/" | tail -1)
-    echo "inferred registry ${REPOSITORY}"
-fi
+
+set -xe
 
 NEWCACHE=${CACHE}-new
 
-if ! docker -v 2> /dev/null; then
-    echo "switching to podman ..."
-    PODMAN=true
-    shopt -s expand_aliases
-    alias docker=podman
+# setup a buildx driver for multi-arch / remote cached builds
+docker buildx create --driver docker-container --use
 
-    # podman command line parameters (just use local cache)
-    cachefrom=""
-    cacheto=""
-else
-    # setup a buildx driver for multi-arch / remote cached builds
-    docker buildx create --driver docker-container --use
-    # docker command line parameters
-    cachefrom=--cache-from=type=local,src=${CACHE}
-    cacheto=--cache-to=type=local,dest=${NEWCACHE},mode=max
-fi
+# docker command line parameters
+cachefrom=--cache-from=type=local,src=${CACHE}
+cacheto=--cache-to=type=local,dest=${NEWCACHE},mode=max
 
-set -e
 
 do_build() {
     ARCHITECTURE=$1
@@ -50,16 +37,19 @@ do_build() {
     shift 2
 
     image_name=${REGISTRY}/${REPOSITORY}-${ARCHITECTURE}-${TARGET}:${TAG}
-    # convert to lowercase - required for OCI URLs
-    image_name=${image_name,,}
     args="
         --build-arg TARGET_ARCHITECTURE=${ARCHITECTURE}
         --target ${TARGET}
         -t ${image_name}
     "
+    if [[ ${ARCHITECTURE} == "linux" ]] ; then
+        args="${args} --platform=${PLATFORM}"
+    fi
 
-    if [[ ${PUSH} == "true" && ${PODMAN} != "true" ]] ; then
+    if [[ ${PUSH} == "true" ]] ; then
         args="--push "${args}
+    else
+        args="--load "${args}
     fi
 
     echo "CONTAINER BUILD FOR ${image_name} with ARCHITECTURE=${ARCHITECTURE} ..."
@@ -68,10 +58,6 @@ do_build() {
         set -x
         docker buildx build ${args} ${*} .
     )
-
-    if [[ ${PUSH} == "true" && ${PODMAN} == "true" ]] ; then
-        podman push ${image_name}
-    fi
 }
 
 # EDIT BELOW FOR YOUR BUILD MATRIX REQUIREMENTS
@@ -89,6 +75,6 @@ do_build() {
 do_build ${ARCH} developer ${cachefrom}
 do_build ${ARCH} runtime ${cachefrom} ${cacheto}
 
-# remove old cache to avoid indefinite growth
-rm -rf ${CACHE}
-mv ${NEWCACHE} ${CACHE}
+docker run --entrypoint bash ${image_name} -c \
+    'ibek ioc generate-schema /epics/links/ibek/*ibek.support.yaml' > \
+    ibek.ioc.schema.json
