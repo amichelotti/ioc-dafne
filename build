@@ -27,4 +27,4 @@ done
 # it is called xxxxx.ioc.ibek.schema.json for project ioc-xxxxx
 podman run --entrypoint bash ${TAG} -c \
     'ibek ioc generate-schema /epics/links/ibek/*ibek.support.yaml' > \
-    ${PROJECT#ioc-}.ibek.ioc.schema.json
+    ibek.ioc.schema.json
