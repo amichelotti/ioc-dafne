@@ -10,21 +10,13 @@ TARGET_ARCHITECTURE=${1:-linux}
 set -xe
 
 THIS_DIR=$(realpath $(dirname ${0}))
-PROJECT=$(basename ${THIS_DIR})
+cd ${THIS_DIR}
 
-ARGS="
---build-arg TARGET_ARCHITECTURE=${TARGET_ARCHITECTURE}
---build-arg TARGETARCH=amd64
---net host
-"
-
-for target in developer runtime ; do
-    TAG=ghcr.io/epics-containers/${PROJECT}-${TARGET_ARCHITECTURE}-${target}:local
-    podman buildx build --target ${target} ${ARGS} -t ${TAG} .
-done
+# build runtime and developer images
+ec dev build --arch ${TARGET_ARCHITECTURE}
 
 # get the schema file from the developer container and save it locally
-# it is called xxxxx.ioc.ibek.schema.json for project ioc-xxxxx
-podman run --entrypoint bash ${TAG} -c \
-    'ibek ioc generate-schema /epics/links/ibek/*ibek.support.yaml' > \
-    ibek.ioc.schema.json
+ec dev launch tests/example-ibek-config --execute \
+'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' \
+> ibek.ioc.schema.json
+
