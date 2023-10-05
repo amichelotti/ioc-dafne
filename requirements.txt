@@ -1,3 +1,3 @@
-# epics-containers-cli==2.1.1
-# use unreleased beta tags in requirements.txt when debugging CI i.e. :
-epics-containers-cli -e git+https://github.com/epics-containers/epics-containers-cli.git@2.1.1b1#egg=epics-containers-cli
+epics-containers-cli==2.1.1
+# NOTE: to debug the CLI you can use intermediate builds by looking in Actions and copying the 'dist' URL i.e.
+# epics-containers-cli -e https://github.com/epics-containers/epics-containers-cli/suites/16919013647/artifacts/966547589
