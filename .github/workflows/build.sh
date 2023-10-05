@@ -9,76 +9,32 @@
 # INPUTS:
 #   PUSH: if true, push the container image to the registry
 #   TAG: the tag to use for the container image
-#   REGISTRY: the container registry to push to
-#   REPOSITORY: the container repository to push to
-#   CACHE: the directory to use for caching
 #   PLATFORM: the platform to build for (linux/amd64 or linux/arm64)
+#   CACHE: the directory to use for caching
 
-ARCH=${ARCH:-linux}
-PUSH=${PUSH:-false}
+if [[ ${PUSH} == 'true' ]] ; then PUSH='--push' ; else PUSH='' ; fi
 TAG=${TAG:-latest}
-REGISTRY=${REGISTRY:-ghcr.io}
+PLATFORM=${PLATFORM:-linux/amd64}
+CACHE=${CACHE:-/tmp/ec-cache}
 
 set -xe
 
-NEWCACHE=${CACHE}-new
+THIS=$(dirname ${0})
+pip install -r ${THIS}/../../requirements.txt
 
-# setup a buildx driver for multi-arch / remote cached builds
-docker buildx create --driver docker-container --use
+# add extra cross compilation platforms below if needed
+# e.g.
+#   ec dev build --buildx --arch rtems ... for RTEMS cross compile
 
-# docker command line parameters
-cachefrom=--cache-from=type=local,src=${CACHE}
-cacheto=--cache-to=type=local,dest=${NEWCACHE},mode=max
+# build runtime and developer images
+ec dev build --buildx --tag ${TAG} --platform ${PLATFORM} --cache-to ${CACHE} \
+--cache-from ${CACHE} ${PUSH}
 
+# extract the ioc schema from the runtime image
+ec dev launch-local --execute \
+'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' \
+> ibek.ioc.schema.json
 
-do_build() {
-    ARCHITECTURE=$1
-    TARGET=$2
-    shift 2
-
-    image_name=${REGISTRY}/${REPOSITORY}-${ARCHITECTURE}-${TARGET}:${TAG}
-    args="
-        --build-arg TARGET_ARCHITECTURE=${ARCHITECTURE}
-        --target ${TARGET}
-        -t ${image_name}
-    "
-    if [[ ${ARCHITECTURE} == "linux" ]] ; then
-        args="${args} --platform=${PLATFORM}"
-    fi
-
-    if [[ ${PUSH} == "true" ]] ; then
-        args="--push "${args}
-    else
-        args="--load "${args}
-    fi
-
-    echo "CONTAINER BUILD FOR ${image_name} with ARCHITECTURE=${ARCHITECTURE} ..."
-
-    (
-        set -x
-        docker buildx build ${args} ${*} .
-    )
-}
-
-# EDIT BELOW FOR YOUR BUILD MATRIX REQUIREMENTS
-#
-# All builds should use cachefrom and the last should use cacheto
-# The last build should execute all stages for the cache to be fully useful.
-#
-# intermediate builds should use cachefrom but will also see the local cache
-#
-# If None of the builds use all stages in the Dockerfile then consider adding
-# cache-to to more than one build. But note there is a tradeoff in performance
-# as every layer will get uploaded to the cache even if it just came out of the
-# cache.
-
-do_build ${ARCH} developer ${cachefrom}
-do_build ${ARCH} runtime ${cachefrom} ${cacheto}
-
-docker run --entrypoint bash ${image_name} -c \
-    'ibek ioc generate-schema /epics/links/ibek/*ibek.support.yaml' > \
-    ibek.ioc.schema.json
-
-# run some acceptance tests
-../../../tests/run-tests.sh
+# run acceptance tests
+${THIS}/../../tests/run-tests.sh
 

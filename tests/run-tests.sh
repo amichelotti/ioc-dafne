@@ -12,9 +12,6 @@ set -ex
 
 cd ${ROOT}
 
-# build the ioc-template container for linux ###################################
-ec dev build
-
 # try out an ibek config IOC instance with the generic IOC #####################
 ec dev launch-local tests/example-config --args '-dit'
 ec dev wait-pv EXAMPLE2:A

@@ -9,8 +9,7 @@ TARGET_ARCHITECTURE=${1:-linux}
 
 set -xe
 
-THIS_DIR=$(realpath $(dirname ${0}))
-cd ${THIS_DIR}
+cd $(dirname ${0})
 
 # build runtime and developer images
 ec dev build --arch ${TARGET_ARCHITECTURE}
