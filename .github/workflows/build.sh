@@ -31,8 +31,8 @@ pip install --upgrade -r ${THIS}/../../requirements.txt
 #   ec dev build --buildx --arch rtems ... for RTEMS cross compile
 
 # build runtime and developer images
-ec dev build --buildx --tag ${TAG} --platform ${PLATFORM} --cache-to ${CACHE} \
---cache-from ${CACHE} ${PUSH}
+ec --log-level debug dev build --buildx --tag ${TAG} --platform ${PLATFORM} \
+--cache-to ${CACHE} --cache-from ${CACHE} ${PUSH}
 
 # extract the ioc schema from the runtime image
 ec dev launch-local --execute \
