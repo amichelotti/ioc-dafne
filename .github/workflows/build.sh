@@ -78,3 +78,7 @@ do_build ${ARCH} runtime ${cachefrom} ${cacheto}
 docker run --entrypoint bash ${image_name} -c \
     'ibek ioc generate-schema /epics/links/ibek/*ibek.support.yaml' > \
     ibek.ioc.schema.json
+
+# run some acceptance tests
+../../../tests/run-tests.sh
+
