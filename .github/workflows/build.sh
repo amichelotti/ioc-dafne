@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# A script for building EPICS container images.
+# A generic build script for epics-containers ioc repositories
 #
 # Note that this is implemented in bash to make it portable between
 # CI frameworks. This approach uses the minimum of GitHub Actions.
@@ -16,13 +16,7 @@ if [[ ${PUSH} == 'true' ]] ; then PUSH='--push' ; else PUSH='' ; fi
 TAG=${TAG:-latest}
 PLATFORM=${PLATFORM:-linux/amd64}
 CACHE=${CACHE:-/tmp/ec-cache}
-
-# a mapping between genenric IOC repo roots and the related container registry
-export EC_REGISTRY_MAPPING='github.com=ghcr.io
-gitlab.diamond.ac.uk=gcr.io/diamond-privreg/controls/ioc'
-
 THIS=$(dirname ${0})
-
 set -xe
 
 pip install --upgrade -r ${THIS}/../../requirements.txt
@@ -40,5 +34,6 @@ ec dev launch-local --execute \
 > ibek.ioc.schema.json
 
 # run acceptance tests
-${THIS}/../../tests/run-tests.sh
+shopt -s nullglob # expand to nothing if no tests are found
+for t in "${THIS}/../../tests/*.sh"; do bash ${t}; done
 
