@@ -4,7 +4,7 @@ repos*
 **/.mypy_cache/
 
 # build pulls the schema out of the container - ignore it
-*.ibek.ioc.schema.json
+*ibek.ioc.schema.json
 # while working on ibek with this project somethimes include it as subfolder
 ibek
 
