@@ -17,10 +17,13 @@ TAG=${TAG:-latest}
 PLATFORM=${PLATFORM:-linux/amd64}
 CACHE=${CACHE:-/tmp/ec-cache}
 
+# a mapping between genenric IOC repo roots and the related container registry
+export EC_REGISTRY_MAPPING='github.com=ghcr.io gitlab.diamond.ac.uk=gcr.io/diamond-privreg/controls/ioc'
+
 set -xe
 
 THIS=$(dirname ${0})
-pip install -r ${THIS}/../../requirements.txt
+pip install --upgrade -r ${THIS}/../../requirements.txt
 
 # add extra cross compilation platforms below if needed
 # e.g.
