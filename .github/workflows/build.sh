@@ -19,9 +19,11 @@ THIS=$(dirname ${0})
 mkdir -p ${CACHE}
 set -xe
 
-# pip install --upgrade -r ${THIS}/../../requirements.txt
 # TODO using developer branch for now
-pip install git+https://github.com/epics-containers/epics-containers-cli.git@dev
+if ! ec --version 2> /dev/null ; then
+    pip install git+https://github.com/epics-containers/epics-containers-cli.git@dev
+    #pip install --upgrade -r ${THIS}/../../requirements.txt
+fi
 
 # add extra cross compilation platforms below if needed  e.g.
 #   ec dev build  --arch rtems ... for RTEMS cross compile
@@ -33,7 +35,7 @@ if [[ "${PUSH}" == 'true' ]] ; then PUSH='--push' ; else PUSH='' ; fi
 ec --log-level debug dev build ${TAG} ${PLATFORM} ${PUSH} ${CARGS}
 
 # extract the ioc schema from the runtime image
-ec dev launch-local --execute \
+ec dev launch-local --tag ${TAG} --execute \
 'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' \
 > ibek.ioc.schema.json
 
