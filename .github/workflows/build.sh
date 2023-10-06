@@ -35,7 +35,7 @@ if [[ "${PUSH}" == 'true' ]] ; then PUSH='--push' ; else PUSH='' ; fi
 ec --log-level debug dev build ${TAG} ${PLATFORM} ${PUSH} ${CARGS}
 
 # extract the ioc schema from the runtime image
-ec dev launch-local --tag ${TAG} --execute \
+ec dev launch-local ${TAG} --execute \
 'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' \
 > ibek.ioc.schema.json
 
