@@ -20,7 +20,9 @@ THIS=$(dirname ${0})
 set -xe
 
 if ! ec --version 2> /dev/null ; then
-    pip install --upgrade -r ${THIS}/../../requirements.txt
+    # pip install --upgrade -r ${THIS}/../../requirements.txt
+    # TODO TODO - using latest dev of ec for the moment
+    pip install git+https://github.com/epics-containers/epics-containers-cli@dev
 fi
 
 # add extra cross compilation platforms below if needed  e.g.
