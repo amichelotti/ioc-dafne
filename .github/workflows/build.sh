@@ -19,7 +19,9 @@ CACHE=${CACHE:-/tmp/ec-cache}
 THIS=$(dirname ${0})
 set -xe
 
-pip install --upgrade -r ${THIS}/../../requirements.txt
+if ! ec --version 2> /dev/null ; then
+    pip install --upgrade -r ${THIS}/../../requirements.txt
+fi
 
 # add extra cross compilation platforms below if needed  e.g.
 #   ec dev build --buildx --arch rtems ... for RTEMS cross compile
@@ -29,7 +31,7 @@ ec --log-level debug dev build --buildx --tag ${TAG} --platform ${PLATFORM} \
 --cache-to ${CACHE} --cache-from ${CACHE} ${PUSH}
 
 # extract the ioc schema from the runtime image
-ec dev launch-local --execute \
+ec dev launch-local --tag ${TAG} --execute \
 'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' \
 > ibek.ioc.schema.json
 
