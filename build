@@ -11,6 +11,9 @@ set -xe
 
 cd $(dirname ${0})
 
+# make sure new repos get their submodule ibek-support
+git submodule update --init
+
 # build runtime and developer images
 ec dev build --arch ${TARGET_ARCHITECTURE}
 

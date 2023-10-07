@@ -12,21 +12,25 @@
 #   PLATFORM: the platform to build for (linux/amd64 or linux/arm64)
 #   CACHE: the directory to use for caching
 
-if [[ ${PUSH} == 'true' ]] ; then PUSH='--push' ; else PUSH='' ; fi
-TAG=${TAG:-latest}
-PLATFORM=${PLATFORM:-linux/amd64}
-CACHE=${CACHE:-/tmp/ec-cache}
+TAG="--tag ${TAG:-latest}"
+PLATFORM="--platform ${PLATFORM:-linux/amd64}"
+CACHE="${CACHE:-/tmp/ec-cache}"
 THIS=$(dirname ${0})
+mkdir -p ${CACHE}
 set -xe
 
-pip install --upgrade -r ${THIS}/../../requirements.txt
+# pip install --upgrade -r ${THIS}/../../requirements.txt
+# TODO using developer branch for now
+pip install git+https://github.com/epics-containers/epics-containers-cli.git@dev
 
 # add extra cross compilation platforms below if needed  e.g.
-#   ec dev build --buildx --arch rtems ... for RTEMS cross compile
+#   ec dev build  --arch rtems ... for RTEMS cross compile
 
 # build runtime and developer images
-ec --log-level debug dev build --buildx --tag ${TAG} --platform ${PLATFORM} \
---cache-to ${CACHE} --cache-from ${CACHE} ${PUSH}
+if [[ -n ${CACHE} ]] ; then CARGS="--cache-to ${CACHE} --cache-from ${CACHE}"; fi
+if [[ "${PUSH}" == 'true' ]] ; then PUSH='--push' ; else PUSH='' ; fi
+
+ec --log-level debug dev build ${TAG} ${PLATFORM} ${PUSH} ${CARGS}
 
 # extract the ioc schema from the runtime image
 ec dev launch-local --execute \
@@ -35,5 +39,5 @@ ec dev launch-local --execute \
 
 # run acceptance tests
 shopt -s nullglob # expand to nothing if no tests are found
-for t in "${THIS}/../../tests/*.sh"; do bash ${t}; done
+for t in "${THIS}/../../tests/*.sh"; do ${t}; done
 
