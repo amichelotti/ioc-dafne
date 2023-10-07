@@ -15,14 +15,14 @@ cd ${ROOT}
 ec --log-level debug dev build ${EC_TAG} ${EC_PLATFORM} ${EC_CARGS}
 
 # try out an ibek config IOC instance with the generic IOC #####################
-ec dev launch-local tests/example-config --args '-d'
+ec dev launch-local tests/example-config --args '-d ${EC_TAG} ${EC_PLATFORM} ${EC_CARGS}'
 ec dev wait-pv EXAMPLE2:A
 ec dev exec 'caput EXAMPLE2:A 1.3'
 ec dev exec 'caput EXAMPLE2:B 1.2'
 ec dev exec 'caget EXAMPLE2:SUM' | grep '2.5'
 
 # Test an ibek IOC #############################################################
-ec dev launch-local tests/example-ibek-config --args '-d'
+ec dev launch-local tests/example-ibek-config --args '-d ${EC_TAG} ${EC_PLATFORM} ${EC_CARGS}'
 ec dev wait-pv EXAMPLE:IBEK:A
 ec dev exec 'caput EXAMPLE:IBEK:A 1.3'
 ec dev exec 'caput EXAMPLE:IBEK:B 1.2'
