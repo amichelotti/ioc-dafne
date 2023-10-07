@@ -12,32 +12,39 @@
 #   PLATFORM: the platform to build for (linux/amd64 or linux/arm64)
 #   CACHE: the directory to use for caching
 
-if [[ ${PUSH} == 'true' ]] ; then PUSH='--push' ; else PUSH='' ; fi
-TAG=${TAG:-latest}
-PLATFORM=${PLATFORM:-linux/amd64}
-CACHE=${CACHE:-/tmp/ec-cache}
+export EC_TAG="--tag ${TAG:-latest}"
+export EC_PLATFORM="--platform ${PLATFORM:-linux/amd64}"
+export EC_CACHE="${CACHE:-/tmp/ec-cache}"
+if [[ "${PUSH}" == 'true' ]] ; then EC_PUSH='--push' ; else EC_PUSH='' ; fi
+mkdir -p ${CACHE}
+
 THIS=$(dirname ${0})
 set -xe
 
 if ! ec --version 2> /dev/null ; then
-    # pip install --upgrade -r ${THIS}/../../requirements.txt
-    # TODO TODO - using latest dev of ec for the moment
-    pip install git+https://github.com/epics-containers/epics-containers-cli@dev
+    # TODO using developer branch for now
+    pip install git+https://github.com/epics-containers/epics-containers-cli.git@dev
+    #pip install --upgrade -r ${THIS}/../../requirements.txt
 fi
 
 # add extra cross compilation platforms below if needed  e.g.
-#   ec dev build --buildx --arch rtems ... for RTEMS cross compile
+#   ec dev build  --arch rtems ... for RTEMS cross compile
+
+# add cache arguments - local file cache passed by github seems to be most reliable
+export EC_CARGS="
+    --cache-from type=local,src=${EC_CACHE}
+    --cache-to type=local,dest=${EC_CACHE}
+"
 
 # build runtime and developer images
-ec --log-level debug dev build --buildx --tag ${TAG} --platform ${PLATFORM} \
---cache-to ${CACHE} --cache-from ${CACHE} ${PUSH}
+ec --log-level debug dev build ${EC_TAG} ${EC_PLATFORM} ${EC_PUSH} ${EC_CARGS}
 
 # extract the ioc schema from the runtime image
-ec dev launch-local --tag ${TAG} --execute \
+echo ec dev launch-local ${EC_TAG} --execute \
 'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' \
 > ibek.ioc.schema.json
 
 # run acceptance tests
 shopt -s nullglob # expand to nothing if no tests are found
-for t in "${THIS}/../../tests/*.sh"; do bash ${t}; done
+for t in "${THIS}/../../tests/*.sh"; do ${t}; done
 
