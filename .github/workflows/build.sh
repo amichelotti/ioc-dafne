@@ -15,20 +15,14 @@
 export EC_TAG="--tag ${TAG:-latest}"
 export EC_PLATFORM="--platform ${PLATFORM:-linux/amd64}"
 export EC_CACHE="${CACHE:-/tmp/ec-cache}"
-if [[ "${PUSH}" == 'true' ]] ; then EC_PUSH='--push' ; else EC_PUSH='' ; fi
-mkdir -p ${CACHE}
+export EC_DEBUG=true
+if [[ "${PUSH}" == 'true' ]] ; then EC_PUSH='--push' ; fi
 
 THIS=$(dirname ${0})
 set -xe
 
-if ! ec --version 2> /dev/null ; then
-    # TODO using developer branch for now
-    pip install git+https://github.com/epics-containers/epics-containers-cli.git@dev
-    #pip install --upgrade -r ${THIS}/../../requirements.txt
-fi
-
-# add extra cross compilation platforms below if needed  e.g.
-#   ec dev build  --arch rtems ... for RTEMS cross compile
+# get the current version of ec CLI
+pip install -r ${THIS}/../../requirements.txt
 
 # add cache arguments - local file cache passed by github seems to be most reliable
 export EC_CARGS="
@@ -36,13 +30,15 @@ export EC_CARGS="
     --cache-to type=local,dest=${EC_CACHE}
 "
 
+# add extra cross compilation platforms below if needed  e.g.
+#   ec dev build  --arch rtems ... for RTEMS cross compile
+
 # build runtime and developer images
-ec --log-level debug dev build ${EC_TAG} ${EC_PLATFORM} ${EC_PUSH} ${EC_CARGS}
+ec dev build --buildx ${EC_TAG} ${EC_PLATFORM} ${EC_PUSH} ${EC_CARGS}
 
 # extract the ioc schema from the runtime image
 echo ec dev launch-local ${EC_TAG} --execute \
-'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' \
-> ibek.ioc.schema.json
+'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' > ibek.ioc.schema.json
 
 # run acceptance tests
 shopt -s nullglob # expand to nothing if no tests are found
