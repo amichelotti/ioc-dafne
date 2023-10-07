@@ -11,8 +11,8 @@ ROOT=$(realpath ${THIS_DIR}/..)
 set -ex
 
 cd ${ROOT}
-# Build the container ##########################################################
-ec --log-level debug dev build
+# Build the container (inherit arguments from CI workflow if set) ##############
+ec --log-level debug dev build ${EC_TAG} ${EC_PLATFORM} ${EC_CARGS}
 
 # try out an ibek config IOC instance with the generic IOC #####################
 ec dev launch-local tests/example-config --args '-d'
