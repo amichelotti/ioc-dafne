@@ -27,7 +27,7 @@ ec dev wait-pv EXAMPLE:IBEK:A --attempts 20
 ec dev exec 'caput EXAMPLE:IBEK:A 1.3'
 ec dev exec 'caput EXAMPLE:IBEK:B 1.2'
 ec dev exec 'caget EXAMPLE:IBEK:SUM' | grep '2.5'
-ec dev exec 'caget EXAMPLE:EPICS_VERS' | grep 'R7.0.7'
+ec dev exec 'caget test-ibek-ioc:EPICS_VERS' | grep 'R7.0.7'
 
 # Stop the test IOC ############################################################
 ec dev stop
