@@ -12,28 +12,35 @@
 #   PLATFORM: the platform to build for (linux/amd64 or linux/arm64)
 #   CACHE: the directory to use for caching
 
-if [[ ${PUSH} == 'true' ]] ; then PUSH='--push' ; else PUSH='' ; fi
-TAG=${TAG:-latest}
-PLATFORM=${PLATFORM:-linux/amd64}
-CACHE=${CACHE:-/tmp/ec-cache}
+export EC_TAG="--tag ${TAG:-latest}"
+export EC_PLATFORM="--platform ${PLATFORM:-linux/amd64}"
+export EC_CACHE="${CACHE:-/tmp/ec-cache}"
+export EC_DEBUG=true
+if [[ "${PUSH}" == 'true' ]] ; then EC_PUSH='--push' ; fi
+
 THIS=$(dirname ${0})
 set -xe
 
-pip install --upgrade -r ${THIS}/../../requirements.txt
+# get the current version of ec CLI
+pip install -r ${THIS}/../../requirements.txt
+
+# add cache arguments - local file cache passed by github seems to be most reliable
+export EC_CARGS="
+    --cache-from type=local,src=${EC_CACHE}
+    --cache-to type=local,dest=${EC_CACHE}
+"
 
 # add extra cross compilation platforms below if needed  e.g.
-#   ec dev build --buildx --arch rtems ... for RTEMS cross compile
+#   ec dev build  --arch rtems ... for RTEMS cross compile
 
 # build runtime and developer images
-ec --log-level debug dev build --buildx --tag ${TAG} --platform ${PLATFORM} \
---cache-to ${CACHE} --cache-from ${CACHE} ${PUSH}
+ec dev build --buildx ${EC_TAG} ${EC_PLATFORM} ${EC_PUSH} ${EC_CARGS}
 
 # extract the ioc schema from the runtime image
-ec dev launch-local --execute \
-'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' \
-> ibek.ioc.schema.json
+echo ec dev launch-local ${EC_TAG} --execute \
+'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' > ibek.ioc.schema.json
 
 # run acceptance tests
 shopt -s nullglob # expand to nothing if no tests are found
-for t in "${THIS}/../../tests/*.sh"; do bash ${t}; done
+for t in "${THIS}/../../tests/*.sh"; do ${t}; done
 
