@@ -42,6 +42,7 @@
         "source=${localEnv:HOME}/.bash_eternal_history,target=/root/.bash_eternal_history,type=bind",
         "source=${localWorkspaceFolder}/.devcontainer/.bashrc,target=/root/.bashrc,type=bind",
         "source=${localEnv:HOME}/.bashrc_dev_container,target=/root/.bashrc_dev_container,type=bind",
+        "source=${localEnv:HOME}/.bashprofile_dev_container,target=/root/.bashprofile_dev_container,type=bind",
         "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind",
         "source=${localEnv:HOME}/.inputrc,target=/root/.inputrc,type=bind",
         "source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind"
