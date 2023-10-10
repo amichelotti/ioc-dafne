@@ -8,3 +8,8 @@
 # best to let the user do this manually once inside the container
 
 # ibek ioc compile
+
+# add user's custom profile
+if [ -f ~/.bashprofile_dev_container ]; then
+    . ~/.bashprofile_dev_container
+fi
