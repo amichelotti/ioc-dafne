@@ -39,6 +39,7 @@
     "workspaceFolder": "/epics/${localWorkspaceFolderBasename}",
     "mounts": [
         // Mount some useful local files from the user's home directory
+        "source=${localWorkspaceFolder}/../,target=/repos,type=bind",
         "source=${localEnv:HOME}/.bash_eternal_history,target=/root/.bash_eternal_history,type=bind",
         "source=${localWorkspaceFolder}/.devcontainer/.bashrc,target=/root/.bashrc,type=bind",
         "source=${localEnv:HOME}/.bashrc_dev_container,target=/root/.bashrc_dev_container,type=bind",
