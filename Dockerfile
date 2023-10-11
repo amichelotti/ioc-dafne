@@ -23,7 +23,7 @@ RUN iocStats/install.sh 3.1.16
 ################################################################################
 
 # create IOC source tree / generate Makefile / compile
-RUN ibek ioc compile
+RUN ibek ioc build
 
 ##### runtime preparation stage ################################################
 
