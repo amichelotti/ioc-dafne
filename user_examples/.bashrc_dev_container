@@ -27,9 +27,6 @@ if [[ ! -f /tmp/git-completion.bash ]]; then
 fi
 source /tmp/git-completion.bash
 
-# add ibek completion if available
-( source <(ibek --show-completion bash) ) &> /dev/null
-
 function parse_git_branch {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
 }

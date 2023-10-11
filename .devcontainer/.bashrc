@@ -66,3 +66,5 @@ fi
 if [ -f ~/.bashrc_dev_container ]; then
     . ~/.bashrc_dev_container
 fi
+
+source /root/.bash_completions/ibek.sh
