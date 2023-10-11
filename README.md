@@ -12,12 +12,12 @@ Making a new generic IOC
     click **Use this template** -> **Create a new repository** Then choose a name and
     organization for your new generic IOC.
 
-1. Change the README.md file to describe your IOC.
+1. Change the `README.md` file to describe your IOC.
 
-1. Change the Dockerfile to compile in the support modules you need in
+1. Change the `Dockerfile` to compile in the support modules you need in
    your generic IOC Container.
 
-1. Once you have it working you can update tests/runtests.sh to run your
+1. Once you have it working you can update `tests/runtests.sh` to run your
    IOC in a container and test it. We recommend creating a Tickit simulation
    of the device you are controlling and using that to test your IOC.
    See https://dls-controls.github.io/tickit/typing_extensions/index.html
@@ -72,5 +72,3 @@ A few points to note when developing inside the devcontainer:
    install additional packages at devcontainer creation time. These are
    customizations are for developer personalization and can apply to all
    epics-containes ioc projects. See [README.md](user_examples/README.md).
-
-
