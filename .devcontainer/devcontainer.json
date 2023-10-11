@@ -9,7 +9,8 @@
         }
     },
     "remoteEnv": {
-        "DISPLAY": "${localEnv:DISPLAY}"
+        "DISPLAY": "${localEnv:DISPLAY}",
+        "EC_PROJECT": "${localWorkspaceFolderBasename}"
     },
     "customizations": {
         "vscode": {

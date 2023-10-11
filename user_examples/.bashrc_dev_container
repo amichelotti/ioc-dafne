@@ -26,13 +26,3 @@ if [[ ! -f /tmp/git-completion.bash ]]; then
   wget -q -P /tmp  https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
 fi
 source /tmp/git-completion.bash
-
-function parse_git_branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
-}
-
-# make a useful prompt, including current container name
-PS1="\[\e[32m\]\$(parse_git_branch)\[\e[m\][\[\e[34m\]\[\e[m\]\W]\$ "
-export PS1="[\[\e[31m\]${PROJECT_NAME:-container}\[\e[m\]]${PS1}"
-
-
