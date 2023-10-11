@@ -20,6 +20,7 @@ if [[ "${PUSH}" == 'true' ]] ; then EC_PUSH='--push' ; fi
 
 THIS=$(dirname ${0})
 set -xe
+mkdir -p ${CACHE}
 
 # get the current version of ec CLI
 pip install -r ${THIS}/../../requirements.txt
