@@ -38,7 +38,7 @@ export EC_CARGS="
 ec dev build --buildx ${EC_TAG} ${EC_PLATFORM} ${EC_PUSH} ${EC_CARGS}
 
 # extract the ioc schema from the runtime image
-echo ec dev launch-local ${EC_TAG} --execute \
+ec dev launch-local ${EC_TAG} --execute \
 'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' > ibek.ioc.schema.json
 
 # run acceptance tests
