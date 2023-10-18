@@ -71,10 +71,14 @@ function parse_git_branch {
 EC_PROJECT=${EC_PROJECT:-container}
 PS1="\[\e[32m\]\$(parse_git_branch)\[\e[m\][\[\e[34m\]\[\e[m\]\W]\$ "
 export PS1="[\[\e[31m\]${EC_PROJECT#'ioc-'}\[\e[m\]]${PS1}"
-source /root/.bash_completions/ibek.sh
+
+# ibek cli completion
+source <(ibek --show-completion bash)
 
 # add user's custom .bashrc_dev_container
 if [ -f ~/.bashrc_dev_container ]; then
     . ~/.bashrc_dev_container
 fi
+
+
 

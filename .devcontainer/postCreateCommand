@@ -1,15 +1,30 @@
 #!/bin/bash
 
-# the IOC is made at build time but the devcontainer mounts over the top of it
-# so we need to regenerate it for devcontainer use
+################################################################################
+# When using docker we will not be root inside the container
+# the following steps are then required
+################################################################################
 
-# get the ioc template, generate makefile and compile.
-# Commented out because compilation failures stop the devcontainer from starting
-# best to let the user do this manually once inside the container
+if [[ $USER != "root" ]] ; then
+    # make sure the non-root user can build iocs and (mounted in) support modules
+    sudo chown -R ${USER}:${USER} /epics/links
+    sudo chown -h ${USER}:${USER} /epics /epics/ioc
 
-# ibek ioc compile
+    # also give non-root user access to the same bash config we use in podman
+    sudo chmod a+rx /root
+    for f in .inputrc .bash_eternal_history .bashrc .bashrc_dev_container; do
+        sudo chmod a+rw /root/$f
+        ln -sf /root/$f $HOME/$f
+    done
+fi
 
-# add user's custom profile
+################################################################################
+# Custom install script for each developer to add whatever they like to
+# all epics-containers devcontainers
+################################################################################
+
+
+# add user's custom profile container creation script
 if [ -f ~/.bashprofile_dev_container ]; then
     . ~/.bashprofile_dev_container
 fi

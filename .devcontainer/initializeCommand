@@ -5,13 +5,11 @@ for i in \
     .bash_eternal_history \
     .bashrc_dev_container \
     .bashprofile_dev_container \
-    .inputrc \
-    .gitconfig
+    .inputrc
     do
         if [ ! -f $HOME/$i ] ; then
             touch $HOME/$i;
         fi
-        echo verified existance of $i
 done
 
 echo "devcontainerID ${1}"
