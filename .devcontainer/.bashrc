@@ -1,7 +1,8 @@
 ################################################################################
 # epics-containers developer shell configuration.
-# This is a standard ubuntu .bashrc plus a call to .bashrc_dev_container
-# in the user's home directory on the host machine.
+# This is a standard ubuntu .bashrc plus a PS1 prompt with container name
+# and a call to .bashrc_dev_container in the user's home directory on the
+# host machine.
 ################################################################################
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
@@ -62,9 +63,22 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+function parse_git_branch {
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+# make a useful prompt, including current container name
+EC_PROJECT=${EC_PROJECT:-container}
+PS1="\[\e[32m\]\$(parse_git_branch)\[\e[m\][\[\e[34m\]\[\e[m\]\W]\$ "
+export PS1="[\[\e[31m\]${EC_PROJECT#'ioc-'}\[\e[m\]]${PS1}"
+
+# ibek cli completion
+source <(ibek --show-completion bash)
+
 # add user's custom .bashrc_dev_container
 if [ -f ~/.bashrc_dev_container ]; then
     . ~/.bashrc_dev_container
 fi
 
-source /root/.bash_completions/ibek.sh
+
+
