@@ -34,10 +34,10 @@ export EC_CARGS="
 #   ec dev build  --arch rtems ... for RTEMS cross compile
 
 # build runtime and developer images
-ec -v dev build  ${EC_TAG} ${EC_PLATFORM} ${EC_PUSH} ${EC_CARGS}
+ec -v dev build ${EC_TAG} ${EC_PLATFORM} ${EC_PUSH} ${EC_CARGS}
 
 # extract the ioc schema from the runtime image
-ec -v dev launch-local ${EC_TAG} --execute \
+ec dev launch-local ${EC_TAG} --execute \
 'ibek ioc generate-schema /epics/links/ibek/*.ibek.support.yaml' > ibek.ioc.schema.json
 
 # run acceptance tests
