@@ -7,7 +7,7 @@ ARG REGISTRY=ghcr.io/epics-containers
 FROM  ${REGISTRY}/epics-base-${TARGET_ARCHITECTURE}-developer:${BASE} AS developer
 
 # get latest ibek while under dev. In future the epics-base version will be used
-RUN pip install --upgrade ibek==1.4.0
+RUN pip install --upgrade ibek==1.4.1
 
 # the devcontainer mounts the project root to /epics/ioc-template
 WORKDIR /epics/ioc-template/ibek-support
