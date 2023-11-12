@@ -6,10 +6,12 @@ ARG REGISTRY=ghcr.io/epics-containers
 
 FROM  ${REGISTRY}/epics-base-${TARGET_ARCHITECTURE}-developer:${BASE} AS developer
 
-# get latest ibek while under dev. In future the epics-base version will be used
-RUN pip install --upgrade ibek==1.4.2
+# Get latest ibek while in development. Will come from epics-base when stable
+COPY requirements.txt requirements.txt
+RUN pip install --upgrade -r requirements.txt
 
-# the devcontainer mounts the project root to /epics/ioc-template
+# The devcontainer mounts the project root to /epics/ioc-adsimdetector. Using
+# the same location here makes devcontainer/runtime differences transparent.
 WORKDIR /epics/ioc-template/ibek-support
 
 # copy the global ibek files
@@ -22,7 +24,7 @@ RUN iocStats/install.sh 3.1.16
 #  TODO - Add futher support module installations here
 ################################################################################
 
-# create IOC source tree / generate Makefile / compile
+# create IOC source tree, generate Makefile and compile IOC Instance
 RUN ibek ioc build
 
 ##### runtime preparation stage ################################################
